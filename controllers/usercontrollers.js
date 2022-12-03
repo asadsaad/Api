@@ -2,10 +2,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 
-
 exports.signup = async (req, res) => {
   try {
-    // console.log(req.body) 
+    // console.log(req.body)
     const { username, email, password } = req.body;
     const fuser = await User.findOne({ email: email });
     if (fuser) {
@@ -36,7 +35,7 @@ exports.signup = async (req, res) => {
     }
     const p = await bcrypt.hash(password, 12);
     const user = new User({ username, email, password: p });
-   
+
     const userdata = await user.save();
     return res.status(200).json({
       success: true,
@@ -67,7 +66,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ _id: user._id }, "JWT_SECRET");
         return res
           .status(200)
-          .json({ success: true, message: "Login Success", data: user, token });
+          .json({ success: true, message: "Login Success", token });
       } else {
         return res
           .status(400)
@@ -90,7 +89,6 @@ exports.loaduser = async (req, res) => {
     if (user) {
       return res.status(200).json({ success: true, data: user, token });
     }
-
     return res.status(400).json({ success: false, message: "Invalid Attempt" });
   } catch (error) {
     return res.status(404).json({ success: false, message: error.message });
