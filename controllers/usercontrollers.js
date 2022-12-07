@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ _id: user._id }, "JWT_SECRET");
         return res
           .status(200)
-          .json({ success: true, message: "Login Success", token });
+          .json({ success: true, message: "Login Success", user, token });
       } else {
         return res
           .status(400)
@@ -92,5 +92,40 @@ exports.loaduser = async (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid Attempt" });
   } catch (error) {
     return res.status(404).json({ success: false, message: error.message });
+  }
+};
+
+exports.passwordchange = async (req, res) => {
+  try {
+    const user = req.user;
+    const { oldpassword, newpassword } = req.body;
+    if (!oldpassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please Enter Old Password" });
+    }
+    if (!newpassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Please Enter New Password" });
+    }
+    const check = await bcrypt.compare(oldpassword, user.password);
+    if (check) {
+      const p = await bcrypt.hash(newpassword, 12);
+      const nuser = await User.findByIdAndUpdate(
+        { _id: user._id },
+        { password: p },
+        { new: true }
+      );
+      return res
+        .status(200)
+        .json({ success: true, message: "Password Changed Successfully" });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Passwords not match" });
+    }
+  } catch (error) {
+    return res.status(400).json({ success: false, message: error.message });
   }
 };
