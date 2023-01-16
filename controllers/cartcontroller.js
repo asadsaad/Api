@@ -1,6 +1,6 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productmodel");
-const User = require("../models/userModel");
+const User = require("../models/usermodel");
 exports.additemtocart = async (req, res) => {
   try {
     console.log(req.user);
