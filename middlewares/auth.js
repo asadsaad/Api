@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
         .status(404)
         .json({ error: "You are not eligible to perform this action!" });
     }
-    const verify = await jwt.verify(token, "JWT_SECRET");
+    const verify = await jwt.verify(token, process.env.JWT_SECRET);
     if (verify) {
       const user = await User.findOne({ _id: verify, token: token });
       req.token = token;

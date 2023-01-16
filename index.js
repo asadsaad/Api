@@ -4,9 +4,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const userRoutes = require("./Routes/userRoutes");
 const productRoutes = require("./routes/productroutes");
-
+const cartRoutes = require("./routes/cartroutes");
+require("dotenv").config();
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -14,9 +15,13 @@ app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/product", productRoutes);
+app.use("/cart", cartRoutes);
 
+app.get("/", (req, res) => {
+  return res.send("WELCOME TO FIRESTORE");
+});
 mongoose
-  .connect("mongodb://0.0.0.0:27017/api", { useNewUrlParser: true })
+  .connect(process.env.DATABASE_URL, { useNewUrlParser: true })
   .then(() => {
     console.log("db connected");
   });
