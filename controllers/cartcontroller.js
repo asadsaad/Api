@@ -73,10 +73,7 @@ exports.getusercart = async (req, res) => {
     if (ucart) {
       return res.status(200).json({ cart: ucart });
     } else {
-      let ucart_ = new Cart({ user: req.user }).populate({
-        path: "cartItems.product",
-        // Get friends of friends - populate the 'friends' array for every friend
-      });
+      let ucart_ = new Cart({ user: req.user })
       const cart = await ucart_.save();
       return res.status(200).json({ cart });
     }
