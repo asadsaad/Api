@@ -139,10 +139,11 @@ exports.removeitemfromcart = async (req, res) => {
     const ucart = await Cart.findOne({
       user: req.user._id,
     }).populate("cartItems.product");
-
+console.log("derlete",ucart)
     if (ucart) {
       for (let index = 0; index < ucart.cartItems.length; index++) {
         const element = ucart.cartItems[index];
+        console.log("element",element)
         if (element.product._id == req.params.id) {
           // console.log('null')
           ucart.cartItems.pop(element);
