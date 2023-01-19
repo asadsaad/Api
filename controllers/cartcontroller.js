@@ -155,7 +155,7 @@ exports.removeitemfromcart = async (req, res) => {
       const cart = await ucart.save();
       return res
         .status(200)
-        .json({ data: ucart, message: "Item Removed From Cart" });
+        .json({ cart: cart, message: "Item Removed From Cart" });
     }
   } catch (error) {
     console.log(error);
