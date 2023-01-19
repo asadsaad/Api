@@ -17,7 +17,7 @@ exports.additemtocart = async (req, res) => {
       if (cart?.cartItems.length) {
         for (let index = 0; index < cart.cartItems.length; index++) {
           const element = cart.cartItems[index];
-          if (req.params.id == element.product._id) {
+          if (req.params.id == element?.product?._id) {
             element.quantity += 1;
             cart.carttotal += element.product.price;
             const mcart = await cart.save();
@@ -73,7 +73,10 @@ exports.getusercart = async (req, res) => {
     if (ucart) {
       return res.status(200).json({ cart: ucart });
     } else {
-      let ucart_ = new Cart({ user: req.user })
+      let ucart_ = new Cart({ user: req.user }).populate({
+        path: "cartItems.product",
+        // Get friends of friends - populate the 'friends' array for every friend
+      });
       const cart = await ucart_.save();
       return res.status(200).json({ cart });
     }
@@ -139,12 +142,11 @@ exports.removeitemfromcart = async (req, res) => {
     const ucart = await Cart.findOne({
       user: req.user._id,
     }).populate("cartItems.product");
-console.log("derlete",ucart)
+
     if (ucart) {
       for (let index = 0; index < ucart.cartItems.length; index++) {
-        const element = ucart.cartItems[index];
-        console.log("element",element)
-        if (element.product._id == req.params.id) {
+        const element = ucart?.cartItems[index];
+        if (element?.product?._id == req.params.id) {
           // console.log('null')
           ucart.cartItems.pop(element);
           ucart.carttotal -= element.product.price * element.quantity;
