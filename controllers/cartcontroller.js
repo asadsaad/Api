@@ -15,6 +15,12 @@ exports.additemtocart = async (req, res) => {
     });
     if (cart) {
       if (cart?.cartItems.length) {
+         for (let index = 0; index < cart.cartItems.length; index++) {
+      const element = cart.cartItems[index];
+      if (!element?.product) {
+        cart.cartItems.pop(element)
+      }
+    }
         for (let index = 0; index < cart.cartItems.length; index++) {
           const element = cart.cartItems[index];
           if (req.params.id == element?.product?._id) {
@@ -70,8 +76,15 @@ exports.getusercart = async (req, res) => {
       path: "cartItems.product",
       // Get friends of friends - populate the 'friends' array for every friend
     });
-    if (ucart) {
-      return res.status(200).json({ cart: ucart });
+     for (let index = 0; index < ucart.cartItems.length; index++) {
+      const element = ucart.cartItems[index];
+      if (!element?.product) {
+        ucart.cartItems.pop(element)
+      }
+    }
+    const cart_ = await ucart.save()
+    if (cart_) {
+      return res.status(200).json({ cart: cart_ });
     } else {
       let ucart_ = new Cart({ user: req.user }).populate({
         path: "cartItems.product",
@@ -95,10 +108,22 @@ exports.cartitemincreament = async (req, res) => {
       path: "cartItems.product",
       // Get friends of friends - populate the 'friends' array for every friend
     });
+     for (let index = 0; index < ucart.cartItems.length; index++) {
+      const element = ucart.cartItems[index];
+      if (!element?.product) {
+        ucart.cartItems.pop(element)
+      }
+    }
+     for (let index = 0; index < ucart.cartItems.length; index++) {
+      const element = ucart.cartItems[index];
+      if (!element?.product) {
+        ucart.cartItems.pop(element)
+      }
+    }
     // console.log(ucart.cartItems);
     for (let index = 0; index < ucart.cartItems.length; index++) {
       const element = ucart.cartItems[index];
-      if (element.product._id == req.params.id) {
+      if (element?.product?._id == req.params.id) {
         quantitytosend = element.quantity += 1;
         ucart.carttotal += element.product.price;
       }
@@ -120,9 +145,15 @@ exports.cartitemdescreament = async (req, res) => {
       path: "cartItems.product",
       // Get friends of friends - populate the 'friends' array for every friend
     });
+     for (let index = 0; index < ucart.cartItems.length; index++) {
+      const element = ucart.cartItems[index];
+      if (!element?.product) {
+        ucart.cartItems.pop(element)
+      }
+    }
     for (let index = 0; index < ucart.cartItems.length; index++) {
       const element = ucart.cartItems[index];
-      if (element.product._id == req.params.id) {
+      if (element.product?._id == req.params.id) {
         quantitytosend = element.quantity -= 1;
         ucart.carttotal -= element.product.price;
       }
@@ -139,11 +170,18 @@ exports.cartitemdescreament = async (req, res) => {
 exports.removeitemfromcart = async (req, res) => {
   console.log(req.body);
   try {
+    
     const ucart = await Cart.findOne({
       user: req.user._id,
     }).populate("cartItems.product");
 
     if (ucart) {
+      for (let index = 0; index < ucart.cartItems.length; index++) {
+      const element = ucart.cartItems[index];
+      if (!element?.product) {
+        ucart.cartItems.pop(element)
+      }
+    }
       for (let index = 0; index < ucart.cartItems.length; index++) {
         const element = ucart?.cartItems[index];
         if (element?.product?._id == req.params.id) {
@@ -161,3 +199,12 @@ exports.removeitemfromcart = async (req, res) => {
     console.log(error);
   }
 };
+exports.deletecart = async (req,res)=>{
+  try {
+    await Cart.findOneAndDelete({user:req.user})
+    return res.status(200).json({message:"Cart Deleted Successfully"})
+  } catch (error) {
+    return res.status(400).json({message:"Something Went wrong"})
+    
+  }
+}
